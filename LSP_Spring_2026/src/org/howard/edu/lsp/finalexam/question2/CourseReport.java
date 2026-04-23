@@ -1,14 +1,13 @@
 package org.howard.edu.lsp.finalexam.question2;
 
 /**
- * Concrete report for a course showing name and enrollment count.
+ * Concrete report for course information.
  */
 public class CourseReport extends Report {
 
     private String courseName;
     private int enrollment;
 
-    /** Loads course data. */
     @Override
     protected void loadData() {
         courseName = "CSCI 363";

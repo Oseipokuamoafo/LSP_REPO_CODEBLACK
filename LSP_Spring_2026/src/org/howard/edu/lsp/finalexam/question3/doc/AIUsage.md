@@ -1,12 +1,14 @@
-AI Tools Used:
-Claude Code (claude-sonnet-4-6)
+# AI Usage — Question 3
 
-Prompts Used:
-1. What boundary values should I test for a grade threshold at 60?
-2. How does assertThrows work in JUnit 5 for testing IllegalArgumentException?
+**AI Tools Used:** Claude (Anthropic)
 
-How AI Helped:
-AI helped identify the exact boundary values to test (59.9 and 60.0) and showed the correct assertThrows lambda syntax for JUnit 5 exception testing.
+**Prompts Used:**
+1. How do I write JUnit 5 tests for a method that throws IllegalArgumentException?
+2. What are good boundary values to test for a grade calculator with scores 0–100?
+3. How does assertThrows work in JUnit 5?
 
-Reflection:
-I learned that boundary-value analysis is essential for grade thresholds — the difference between passing and failing lies exactly at 60, so both sides of that boundary must be tested explicitly.
+**How AI Helped:**
+AI helped me identify meaningful boundary values and structure the test class correctly using JUnit 5 annotations. It also clarified the syntax for assertThrows with lambda expressions.
+
+**Reflection:**
+I learned that boundary testing is not just about edge numbers but about what behavior changes at those boundaries, like a 60 being both passing and a D grade at the same time.

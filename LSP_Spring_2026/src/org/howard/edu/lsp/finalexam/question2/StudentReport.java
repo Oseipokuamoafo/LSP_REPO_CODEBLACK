@@ -1,14 +1,13 @@
 package org.howard.edu.lsp.finalexam.question2;
 
 /**
- * Concrete report for a student showing name and GPA.
+ * Concrete report for student information.
  */
 public class StudentReport extends Report {
 
     private String studentName;
     private double gpa;
 
-    /** Loads student data. */
     @Override
     protected void loadData() {
         studentName = "John Doe";

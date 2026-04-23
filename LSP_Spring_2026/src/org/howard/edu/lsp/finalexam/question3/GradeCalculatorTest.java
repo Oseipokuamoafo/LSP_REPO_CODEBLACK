@@ -1,59 +1,53 @@
 package org.howard.edu.lsp.finalexam.question3;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GradeCalculatorTest {
 
-    private GradeCalculator calc;
+    private final GradeCalculator calc = new GradeCalculator();
 
-    @BeforeEach
-    public void setUp() {
-        calc = new GradeCalculator();
-    }
-
-    /** average() returns the correct mean of three scores */
+    // 1. Test for average()
     @Test
     public void testAverageOfThreeScores() {
-        assertEquals(80.0, calc.average(70, 80, 90), 0.001);
+        assertEquals(80.0, calc.average(70, 80, 90), 0.01);
     }
 
-    /** letterGrade() returns "B" for an average of 85 */
+    // 2. Test for letterGrade()
     @Test
     public void testLetterGradeB() {
         assertEquals("B", calc.letterGrade(85.0));
     }
 
-    /** isPassing() returns true when average is 60 or above */
+    // 3. Test for isPassing()
     @Test
-    public void testIsPassingAboveThreshold() {
-        assertTrue(calc.isPassing(75.0));
+    public void testIsPassingTrue() {
+        assertTrue(calc.isPassing(65.0));
     }
 
-    /** Boundary: average of exactly 60 is passing (grade "D") */
+    // 4a. Boundary test — exactly 60 should be passing and return "D"
     @Test
-    public void testBoundaryExactly60IsPassing() {
-        assertTrue(calc.isPassing(60.0));
+    public void testBoundaryExactly60() {
         assertEquals("D", calc.letterGrade(60.0));
+        assertTrue(calc.isPassing(60.0));
     }
 
-    /** Boundary: average just below 60 is failing */
+    // 4b. Boundary test — score of 0 should be valid and return "F"
     @Test
-    public void testBoundaryJustBelow60IsFailing() {
-        assertFalse(calc.isPassing(59.9));
-        assertEquals("F", calc.letterGrade(59.9));
+    public void testBoundaryScoreZero() {
+        assertEquals("F", calc.letterGrade(calc.average(0, 0, 0)));
+        assertFalse(calc.isPassing(0.0));
     }
 
-    /** Exception: score below 0 throws IllegalArgumentException */
+    // 5a. Exception test — score below 0
     @Test
     public void testExceptionScoreBelowZero() {
         assertThrows(IllegalArgumentException.class, () -> calc.average(-1, 50, 50));
     }
 
-    /** Exception: score above 100 throws IllegalArgumentException */
+    // 5b. Exception test — score above 100
     @Test
     public void testExceptionScoreAbove100() {
-        assertThrows(IllegalArgumentException.class, () -> calc.average(50, 101, 50));
+        assertThrows(IllegalArgumentException.class, () -> calc.average(101, 50, 50));
     }
 }

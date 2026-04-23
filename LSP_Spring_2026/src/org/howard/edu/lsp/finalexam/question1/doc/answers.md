@@ -1,40 +1,59 @@
-Part 1:
-Shared Resource #1: nextId (the integer counter used to generate unique request IDs)
-Shared Resource #2: requests (the ArrayList that stores all request strings)
+# Question 1 Answers
 
-Concurrency Problem: Race condition. Two threads can read the same value of nextId simultaneously, producing duplicate IDs. They can also interleave calls to requests.add(), causing lost updates or even an ArrayIndexOutOfBoundsException because ArrayList is not thread-safe.
+## Part 1: Shared Resources and Risk
 
-Why addRequest() is unsafe: addRequest() performs a compound read-modify-write operation across two separate shared resources (nextId via getNextId(), and requests via requests.add()). Neither operation is atomic. A thread can be preempted between any two steps, allowing another thread to observe or modify the shared state in between, producing duplicate IDs or corrupting the list.
+**Shared Resource #1:** `nextId` — the integer counter used to generate unique request IDs
 
-Part 2:
-Fix A: Explanation
-NOT correct. Synchronizing only getNextId() ensures that the read-increment-return of nextId is atomic, but it does not protect requests.add() in addRequest(). Two threads can each obtain their unique ID correctly but then call requests.add() concurrently on a non-thread-safe ArrayList, causing data corruption or lost entries.
+**Shared Resource #2:** `requests` — the shared ArrayList that stores all request strings
 
-Fix B: Explanation
-CORRECT. Synchronizing addRequest() on the same object lock ensures that the entire compound action — getting the next ID and adding the request to the list — is executed as a single atomic unit. No other thread can enter addRequest() while one thread is inside it, so both nextId and requests are always accessed under the same lock. This eliminates the race condition completely.
+**Concurrency Problem:**
+A race condition may occur. Multiple threads can read and modify `nextId` and `requests` simultaneously without coordination, leading to duplicate IDs or corrupted list state.
 
-Fix C: Explanation
-NOT correct. Synchronizing getRequests() only protects the return of the list reference; it does nothing to protect nextId or the add operations in addRequest(). The race condition on ID generation and list mutation is entirely unaffected.
+**Why addRequest() is unsafe:**
+`addRequest()` performs multiple non-atomic operations: it calls `getNextId()` to read and increment `nextId`, then constructs a request string, then adds it to `requests`. If two threads execute these steps concurrently, they may read the same value of `nextId` before either increments it, resulting in duplicate request IDs. Additionally, `ArrayList` is not thread-safe, so concurrent `add()` calls can corrupt the list.
 
-Part 3:
-Answer + Explanation
-No, getNextId() should NOT be public. According to Arthur Riel's heuristics, a class should minimize its public interface and expose only what external clients truly need. getNextId() is an internal implementation detail used solely by addRequest(). Making it public violates encapsulation — it exposes internal state-management logic, allows external callers to advance the counter without adding a request (breaking invariants), and makes the class harder to maintain because the internal counter becomes part of the public API contract. It should be private or package-private.
+---
 
-Part 4:
-Description:
-The alternative approach is using java.util.concurrent atomic classes, specifically AtomicInteger for the ID counter and CopyOnWriteArrayList (or Collections.synchronizedList) for the request list. AtomicInteger provides lock-free, thread-safe increment-and-get operations using hardware-level compare-and-swap (CAS) instructions, eliminating the need for the synchronized keyword. For the list, replacing ArrayList with CopyOnWriteArrayList makes add() thread-safe without explicit locking.
+## Part 2: Evaluate Fixes
 
-Code Snippet:
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
+**Fix A: `public synchronized int getNextId() { ... }`**
+✗ Incorrect. Synchronizing only `getNextId()` protects the ID counter in isolation, but `addRequest()` is still unsynchronized. A thread can call `getNextId()` and get a unique ID, but then be interrupted before adding to the list. Another thread can do the same. The compound action of getting an ID and adding the request is still not atomic, so race conditions on `requests` remain.
 
-public class RequestManager {
-    private AtomicInteger nextId = new AtomicInteger(1);
-    private List<String> requests = new CopyOnWriteArrayList<>();
+**Fix B: `public synchronized void addRequest(String studentName) { ... }`**
+✓ Correct. Synchronizing `addRequest()` makes the entire compound operation atomic — getting the ID, constructing the request string, and adding to the list all happen as one locked block. No two threads can execute this method at the same time, eliminating both the duplicate ID problem and the unsafe ArrayList access.
 
-    public void addRequest(String studentName) {
-        int id = nextId.getAndIncrement();
-        requests.add("Request-" + id + " from " + studentName);
+**Fix C: `public synchronized List<String> getRequests() { ... }`**
+✗ Incorrect. This only synchronizes the getter that returns the list. It does nothing to protect `nextId` or the `add()` operations inside `addRequest()`. The race condition during request creation is completely unaddressed.
+
+---
+
+## Part 3: Object-Oriented Design
+
+**Answer:** No, `getNextId()` should not be public.
+
+**Explanation:** According to Arthur Riel's heuristics, a class should hide its implementation details and only expose what is necessary for clients to use it. `getNextId()` is an internal mechanism used by `addRequest()` to manage ID generation — it is an implementation detail, not part of the intended public interface. Making it public violates encapsulation by allowing external classes to call it directly, which could increment the counter and cause IDs to be skipped or misused. It should be private or package-private.
+
+---
+
+## Part 4: Alternative Synchronization Approach
+
+**Description:**
+The alternative approach discussed in lecture is using `ReentrantLock` from `java.util.concurrent.locks`. Instead of using the `synchronized` keyword, a `ReentrantLock` is explicitly acquired before the critical section and released in a `finally` block to guarantee it is always unlocked. This gives more fine-grained control over locking compared to `synchronized` and makes the locking behavior more visible and explicit in the code.
+
+**Code Snippet:**
+```java
+import java.util.concurrent.locks.ReentrantLock;
+
+private final ReentrantLock lock = new ReentrantLock();
+
+public void addRequest(String studentName) {
+    lock.lock();
+    try {
+        int id = getNextId();
+        String request = "Request-" + id + " from " + studentName;
+        requests.add(request);
+    } finally {
+        lock.unlock();
     }
 }
+```

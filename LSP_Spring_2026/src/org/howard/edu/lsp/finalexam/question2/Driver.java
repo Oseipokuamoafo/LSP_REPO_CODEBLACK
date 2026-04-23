@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Driver demonstrating the Template Method pattern with polymorphism.
+ * Driver class demonstrating polymorphism with the Template Method pattern.
  */
 public class Driver {
     public static void main(String[] args) {
@@ -14,6 +14,7 @@ public class Driver {
 
         for (Report report : reports) {
             report.generateReport();
+            System.out.println();
         }
     }
 }

@@ -1,13 +1,14 @@
-AI Tools Used:
-Claude Code (claude-sonnet-4-6)
+# AI Usage — Question 2
 
-Prompts Used:
-1. Explain the Template Method design pattern and how the abstract base class defines the workflow.
-2. How should loadData() store values so that formatBody() can use them?
-3. Why should generateReport() be declared final in the Template Method pattern?
+**AI Tools Used:** Claude (Anthropic)
 
-How AI Helped:
-AI helped clarify that the template method should be final to prevent subclasses from breaking the algorithm structure, and that data loaded in loadData() should be stored in instance fields so the formatting methods can access them.
+**Prompts Used:**
+1. How does the Template Method pattern work in Java?
+2. How do I define abstract methods in a base class and implement them in subclasses?
+3. How do I demonstrate polymorphism using a List of base class references in Java?
 
-Reflection:
-I learned that the Template Method pattern cleanly separates what stays the same (the workflow) from what varies (the report-specific content), making the design open for extension but closed for modification.
+**How AI Helped:**
+AI helped me understand how to structure the abstract base class so the workflow stays fixed while subclasses handle the variable steps. It also helped me write clean javadocs and make sure the driver properly demonstrated polymorphism.
+
+**Reflection:**
+I got a better understanding of how the Template Method pattern separates invariant structure from variable behavior, which makes code much easier to extend.
