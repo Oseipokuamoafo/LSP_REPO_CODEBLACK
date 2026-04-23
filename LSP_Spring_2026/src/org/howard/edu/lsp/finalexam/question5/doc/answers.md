@@ -6,7 +6,7 @@
 **Name:** All data should be hidden within its class.
 
 **Explanation:**
-This heuristic states that instance variables should never be public — they should always be private and accessed only through methods. In lecture, this was illustrated by showing how exposing fields directly allows outside classes to change internal state in unpredictable ways, making the class hard to maintain. Keeping data hidden means only the class itself controls how its state changes, which reduces bugs and makes the code easier to reason about.
+This heuristic states that instance variables should never be public, they should always be private and accessed only through methods. In lecture, this was illustrated by showing how exposing fields directly allows outside classes to change internal state in unpredictable ways, making the class hard to maintain. Keeping data hidden means only the class itself controls how its state changes, which reduces bugs and makes the code easier to reason about.
 
 ---
 
